@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-card p-4">
+                <h4 class="mb-4"><i class="fas fa-cog me-2"></i>User Settings</h4>
+                <form method="POST">
+                    <div class="mb-4">
+                        <h5>Notifications</h5>
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="emailNotifications" 
+                                   name="email_notifications" {{ 'checked' if settings.email_notifications }}>
+                            <label class="form-check-label" for="emailNotifications">Email Notifications</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="pushNotifications" 
+                                   name="push_notifications" {{ 'checked' if settings.push_notifications }}>
+                            <label class="form-check-label" for="pushNotifications">Push Notifications</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="dailyDigest" 
+                                   name="daily_digest" {{ 'checked' if settings.daily_digest }}>
+                            <label class="form-check-label" for="dailyDigest">Daily Task Digest</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="weeklySummary" 
+                                   name="weekly_summary" {{ 'checked' if settings.weekly_summary }}>
+                            <label class="form-check-label" for="weeklySummary">Weekly Progress Summary</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Task Preferences</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Default Task View</label>
+                            <select class="form-select" name="default_view">
+                                <option value="list" {{ 'selected' if settings.default_task_view == 'list' }}>List View</option>
+                                <option value="grid" {{ 'selected' if settings.default_task_view == 'grid' }}>Grid View</option>
+                                <option value="calendar" {{ 'selected' if settings.default_task_view == 'calendar' }}>Calendar View</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Reminder Advance Time (minutes)</label>
+                            <input type="number" class="form-control" name="reminder_advance" 
+                                   value="{{ settings.task_reminder_advance }}" min="5" max="180">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

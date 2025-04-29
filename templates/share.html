@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="glass-card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-4">
+                <i class="fas fa-share-alt me-2"></i>Share Task
+            </h5>
+            <form id="shareTaskForm" method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Collaborators</label>
+                    <div class="input-group">
+                        <input type="email" class="form-control" id="collaboratorEmail" 
+                               placeholder="Enter email address">
+                        <button type="button" class="btn btn-primary" onclick="addCollaborator()">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="collaboratorsList" class="mb-3"></div>
+                <div class="mb-3">
+                    <label class="form-label">Permission Level</label>
+                    <select class="form-select" id="permissionLevel">
+                        <option value="view">View Only</option>
+                        <option value="edit">Can Edit</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Share Task</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

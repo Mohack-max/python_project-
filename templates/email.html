@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Reminder</title>
+    <style>
+        body {
+           
+            background-size: cover;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        form {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            display: inline-block;
+            animation: slideIn 1s ease-in-out;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        label, input, button {
+            display: block;
+            margin: 15px auto;
+            font-size: 1.2em;
+        }
+
+        input {
+            padding: 10px;
+            width: 80%;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .link-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .link-button:hover {
+            background-color: #0056b3;
+        }
+
+        .moon-image {
+            width: 100px;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Set Email Reminder</h1>
+    <form action="{{ url_for('email_reminder') }}" method="post">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <button type="submit">Set Reminder</button>
+    </form>
+
+    <!-- Moon Image -->
+    
+
+    <!-- Styled link to enhanced-features.html -->
+    <a href="{{ url_for('enhanced_features') }}" class="link-button">
+        Visit Enhanced Features
+    </a>
+</body>
+</html>

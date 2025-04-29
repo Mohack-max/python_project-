@@ -1,0 +1,55 @@
+<nav class="navbar navbar-expand-lg navbar-light sticky-top animate-fade-in">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+            <i class="fas fa-check-circle text-primary me-2"></i>TaskMaster
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="badge bg-primary rounded-pill">
+                <i class="fas fa-tasks me-1"></i>{{ todos|length }} Tasks
+            </span>
+            <span class="badge bg-success rounded-pill">
+                <i class="fas fa-check me-1"></i>{{ todos|selectattr('status', 'equalto', 'completed')|list|length }} Completed
+            </span>
+            <form action="{{ url_for('toggle_theme') }}" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-link text-dark p-0">
+                    <i class="fas {% if user_preferences.theme == 'dark' %}fa-sun{% else %}fa-moon{% endif %} fs-5"></i>
+                </button>
+            </form>
+            <a href="#settings-form" class="btn btn-outline-primary rounded-circle" data-bs-toggle="collapse" role="button">
+                <i class="fas fa-cog"></i>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="collapse" id="settings-form">
+    <div class="container py-3 settings-panel animate-slide-down">
+        <form action="{{ url_for('save_preferences') }}" method="POST" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label"><i class="fas fa-palette me-2"></i>Theme</label>
+                <select name="theme" class="form-select">
+                    <option value="light" {% if user_preferences.theme == 'light' %}selected{% endif %}>Light</option>
+                    <option value="dark" {% if user_preferences.theme == 'dark' %}selected{% endif %}>Dark</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label"><i class="fas fa-font me-2"></i>Font</label>
+                <select name="font_family" class="form-select">
+                    <option value="Poppins" {% if user_preferences.font_family == 'Poppins' %}selected{% endif %}>Poppins</option>
+                    <option value="Roboto" {% if user_preferences.font_family == 'Roboto' %}selected{% endif %}>Roboto</option>
+                    <option value="Open Sans" {% if user_preferences.font_family == 'Open Sans' %}selected{% endif %}>Open Sans</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label"><i class="fas fa-paint-brush me-2"></i>Background</label>
+                <input type="color" name="background_color" class="form-control form-control-color w-100" 
+                       value="{{ user_preferences.background_color|default('#f4f6f8') }}">
+            </div>
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Save Preferences
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

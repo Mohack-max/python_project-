@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="glass-card text-center p-4">
+                <div class="profile-avatar mb-3">
+                    {% if profile and profile.avatar_url %}
+                    <img src="{{ profile.avatar_url }}" alt="Profile Picture" class="rounded-circle" width="150">
+                    {% else %}
+                    <div class="default-avatar">
+                        <i class="fas fa-user fa-5x"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <h3>{{ profile.full_name if profile else user.username }}</h3>
+                <p class="text-muted">{{ profile.bio if profile else '' }}</p>
+                <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-primary">
+                    <i class="fas fa-edit me-2"></i>Edit Profile
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="glass-card p-4">
+                <h4 class="mb-4">Profile Information</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Username:</strong> {{ user.username }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Phone:</strong> {{ profile.phone if profile else 'Not set' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Timezone:</strong> {{ profile.timezone if profile else 'UTC' }}</p>
+                        <p><strong>Language:</strong> {{ profile.language if profile else 'en' }}</p>
+                        <p><strong>Member since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 mt-4">
+                <h4 class="mb-4">Activity Summary</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h3>{{ user.tasks.filter_by(status='completed').count() }}</h3>
+                            <p>Tasks Completed</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h3>{{ user.tasks.filter_by(status='pending').count() }}</h3>
+                            <p>Tasks Pending</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h3>{{ user.templates.count() }}</h3>
+                            <p>Templates Created</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

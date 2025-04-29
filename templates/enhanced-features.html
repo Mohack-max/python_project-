@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App - Enhanced Features</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        /* Base Styles */
+        body {
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            background: #1a1a2e;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: #4ecca3;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Particle background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        /* Header Styles */
+        .app-header {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .header-icons {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: floatIcon 3s ease-in-out infinite;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .header-icon:nth-child(1) { animation-delay: 0s; }
+        .header-icon:nth-child(2) { animation-delay: 0.3s; }
+        .header-icon:nth-child(3) { animation-delay: 0.6s; }
+
+        .header-text {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShine 3s ease-in-out infinite;
+            margin: 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+
+        @keyframes textShine {
+            0% { filter: brightness(100%) blur(0); }
+            50% { filter: brightness(150%) blur(1px); }
+            100% { filter: brightness(100%) blur(0); }
+        }
+
+        /* Task Statistics */
+        .task-counter {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .counter-item {
+            padding: 10px;
+            border-radius: 8px;
+            min-width: 100px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .counter-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        /* Task priority styling */
+        .priority-high {
+            border-left: 4px solid #dc3545 !important;
+        }
+        
+        .priority-medium {
+            border-left: 4px solid #ffc107 !important;
+        }
+        
+        .priority-low {
+            border-left: 4px solid #28a745 !important;
+        }
+
+        /* Search and filter */
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        /* Task tags */
+        .task-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Task animation */
+        .task-added {
+            animation: fadeInUp 0.5s;
+        }
+
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            height: 200px;
+            margin-top: 20px;
+        }
+
+        /* Navigation */
+        .nav-link {
+            color: #4ecca3;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #84fab0;
+            transform: translateY(-2px);
+        }
+
+        /* Back button */
+        .back-btn {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            z-index: 1001;
+            background-color: #4ecca3;
+            border-color: #4ecca3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle background -->
+    <div id="particles-js"></div>
+
+    <!-- Back button to main app -->
+    <a href="{{ url_for('index') }}" class="btn btn-primary back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Main App
+    </a>
+
+    <!-- Header Section -->
+    <div class="app-header">
+        <div class="header-icons">
+            <i class="fas fa-rocket header-icon"></i>
+            <i class="fas fa-star header-icon"></i>
+            <i class="fas fa-moon header-icon"></i>
+        </div>
+        <h1 class="header-text animate__animated animate__fadeInDown">Enhanced Features</h1>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <!-- Task Statistics -->
+                <!-- Update the Task Statistics section to use Jinja2 variables -->
+                <div class="card mb-4 animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="card-title">Task Overview</h5>
+                        <div class="task-counter">
+                            <div class="counter-item">
+                                <div class="counter-number" id="total-tasks">{{ stats.total }}</div>
+                                <div>Total</div>
+                            </div>
+                            <div class="counter-item">
+                                <div class="counter-number" id="completed-tasks">{{ stats.completed }}</div>
+                                <div>Completed</div>
+                            </div>
+                            <div class="counter-item">
+                                <div class="counter-number" id="pending-tasks">{{ stats.pending }}</div>
+                                <div>Pending</div>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <label>Completion Progress</label>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" id="task-progress" role="progressbar" 
+                                     style="width: {{ completion_percentage }}%" 
+                                     aria-valuenow="{{ completion_percentage }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">{{ completion_percentage }}%</div>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="taskChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="card mb-4 animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="card-title">Advanced Search & Filter</h5>
+                        <div class="search-container">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="task-search" placeholder="Search tasks...">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#" onclick="filterTasks('all')">All Tasks</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="filterTasks('completed')">Completed</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="filterTasks('pending')">Pending</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" onclick="filterTasks('high')">High Priority</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="filterTasks('medium')">Medium Priority</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="filterTasks('low')">Low Priority</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Date Range Filter -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label>From Date</label>
+                                <input type="date" class="form-control" id="date-from">
+                            </div>
+                            <div class="col-md-6">
+                                <label>To Date</label>
+                                <input type="date" class="form-control" id="date-to">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="applyDateFilter()">Apply Filter</button>
+                    </div>
+                </div>
+
+                <!-- Export Options -->
+                <div class="card mb-4 animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="card-title">Export & Share</h5>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-light" onclick="exportTasks('json')">
+                                <i class="fas fa-file-code me-2"></i>Export as JSON
+                            </button>
+                            <button class="btn btn-outline-light" onclick="exportTasks('csv')">
+                                <i class="fas fa-file-csv me-2"></i>Export as CSV
+                            </button>
+                            <button class="btn btn-outline-light" onclick="printTasks()">
+                                <i class="fas fa-print me-2"></i>Print Tasks
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks List -->
+                <div class="card animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <h5 class="card-title">Your Tasks</h5>
+                        <div class="list-group">
+                            {% for todo in todos %}
+                            <div class="list-group-item priority-{{ todo.priority|lower }} task-added">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">
+                                        <i class="fas fa-clipboard-check task-icon"></i>
+                                        {{ todo.title }}
+                                    </h5>
+                                    <small>
+                                        <i class="far fa-clock task-icon"></i>
+                                        {{ todo.due_date }}
+                                    </small>
+                                </div>
+                                <p class="mb-1">
+                                    <i class="fas fa-align-left task-icon"></i>
+                                    {{ todo.description }}
+                                </p>
+                                <div class="mb-2">
+                                    <span class="task-tag">{{ todo.priority }}</span>
+                                    <span class="task-tag">{{ todo.status }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <small>
+                                        <i class="fas fa-flag task-icon"></i>
+                                        Priority: {{ todo.priority|lower }}
+                                    </small>
+                                    <div class="btn-group">
+                                        <form action="{{ url_for('update_status', id=todo.id, status='completed') }}" method="post" style="display: inline;">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check-circle me-1"></i> Complete
+                                            </button>
+                                        </form>
+                                        <form action="{{ url_for('delete', id=todo.id) }}" method="post" style="display: inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash-alt me-1"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Add Particles.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <!-- Add Chart.js for statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Add custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/enhanced-features.js') }}"></script>
+    
+    <script>
+        // Initialize particles background
+        document.addEventListener('DOMContentLoaded', function() {
+            if(typeof particlesJS !== 'undefined') {
+                particlesJS("particles-js", {
+                    particles: {
+                        number: { value: 80, density: { enable: true, value_area: 800 } },
+                        color: { value: "#ffffff" },
+                        shape: { type: "circle" },
+                        opacity: { value: 0.5, random: false },
+                        size: { value: 3, random: true },
+                        line_linked: {
+                            enable: true,
+                            distance: 150,
+                            color: "#ffffff",
+                            opacity: 0.4,
+                            width: 1
+                        },
+                        move: {
+                            enable: true,
+                            speed: 2,
+                            direction: "none",
+                            random: false,
+                            straight: false,
+                            out_mode: "out",
+                            bounce: false
+                        }
+                    },
+                    interactivity: {
+                        detect_on: "canvas",
+                        events: {
+                            onhover: { enable: true, mode: "repulse" },
+                            onclick: { enable: true, mode: "push" }
+                        },
+                        modes: {
+                            repulse: { distance: 100, duration: 0.4 },
+                            push: { particles_nb: 4 }
+                        }
+                    },
+                    retina_detect: true
+                });
+            }
+            
+            // Initialize chart
+            initTaskChart();
+        });
+
+                        // Animate the removal
+                        taskElement.classList.add('animate__animated', 'animate__fadeOutRight');
+                        
+                        // Remove the element after animation completes
+                        setTimeout(() => {
+                            taskElement.remove();
+                            
+                            // Update task statistics
+                            updateTaskStats();
+                        }, 500);
+                    }
+                });
+            });
+            
+            // Add event listeners to complete buttons
+            document.querySelectorAll('.btn-success').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const taskElement = this.closest('.list-group-item');
+                    if (taskElement) {
+                        // Toggle completed class
+                        taskElement.classList.toggle('completed');
+                        
+                        // Update task statistics
+                        updateTaskStats();
+                    }
+                });
+            });
+        });
+        
+        // Initialize task chart
+        // Initialize task chart with real data
+        function initTaskChart() {
+            const ctx = document.getElementById('taskChart').getContext('2d');
+            
+            // Use the stats from Jinja2
+            const completedTasks = {{ stats.completed }};
+            const pendingTasks = {{ stats.pending }};
+            
+            const taskChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Pending'],
+                    datasets: [{
+                        data: [completedTasks, pendingTasks],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(255, 193, 7, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Filter tasks by status or priority using the API
+        function filterTasks(filter) {
+            let url = '/api/todos/filter?';
+            
+            if (filter === 'completed' || filter === 'pending') {
+                url += `status=${filter}`;
+            } else if (filter === 'high' || filter === 'medium' || filter === 'low') {
+                url += `priority=${filter}`;
+            } else {
+                url += 'status=all';
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    updateTaskList(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching filtered tasks:', error);
+                });
+        }
+        
+        // Apply date filter using the API
+        function applyDateFilter() {
+            const fromDate = document.getElementById('date-from').value;
+            const toDate = document.getElementById('date-to').value;
+            
+            if (!fromDate || !toDate) {
+                alert('Please select both from and to dates');
+                return;
+            }
+            
+            const url = `/api/todos/filter?from_date=${fromDate}&to_date=${toDate}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    updateTaskList(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching date-filtered tasks:', error);
+                });
+        }
+        
+        // Update the task list with filtered data
+        function updateTaskList(tasks) {
+            const listGroup = document.querySelector('.list-group');
+            listGroup.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                listGroup.innerHTML = '<p class="text-center">No tasks match your filter criteria</p>';
+                return;
+            }
+            
+            tasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = `list-group-item priority-${task.priority} task-added`;
+                if (task.status === 'completed') {
+                    taskElement.classList.add('completed');
+                }
+                
+                const tagsHtml = task.tags.map(tag => 
+                    `<span class="task-tag">${tag}</span>`
+                ).join('');
+                
+                taskElement.innerHTML = `
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">
+                            <i class="fas fa-clipboard-check task-icon"></i>
+                            ${task.title}
+                        </h5>
+                        <small>
+                            <i class="far fa-clock task-icon"></i>
+                            ${task.due_date || 'No due date'}
+                        </small>
+                    </div>
+                    <p class="mb-1">
+                        <i class="fas fa-align-left task-icon"></i>
+                        ${task.description || 'No description'}
+                    </p>
+                    <div class="mb-2">
+                        ${tagsHtml}
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <small>
+                            <i class="fas fa-flag task-icon"></i>
+                            Priority: ${task.priority}
+                        </small>
+                        <div class="btn-group">
+                            ${task.status !== 'completed' ? 
+                                `<button class="btn btn-success btn-sm" onclick="completeTask(${task.id})">
+                                    <i class="fas fa-check-circle me-1"></i> Complete
+                                </button>` : ''}
+                            <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">
+                                <i class="fas fa-trash-alt me-1"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                listGroup.appendChild(taskElement);
+            });
+            
+            // Add event listeners to the newly created buttons
+            addButtonEventListeners();
+        }
+        
+        // Add event listeners to buttons
+        function addButtonEventListeners() {
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.btn-danger').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (!this.hasAttribute('data-listener')) {
+                        e.preventDefault();
+                        const taskElement = this.closest('.list-group-item');
+                        if (taskElement) {
+                            // Animate the removal
+                            taskElement.classList.add('animate__animated', 'animate__fadeOutRight');
+                            
+                            // Remove the element after animation completes
+                            setTimeout(() => {
+                                taskElement.remove();
+                                
+                                // Update task statistics
+                                updateTaskStats();
+                            }, 500);
+                        }
+                        this.setAttribute('data-listener', 'true');
+                    }
+                });
+            });
+            
+            // Add event listeners to complete buttons
+            document.querySelectorAll('.btn-success').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (!this.hasAttribute('data-listener')) {
+                        e.preventDefault();
+                        const taskElement = this.closest('.list-group-item');
+                        if (taskElement) {
+                            // Toggle completed class
+                            taskElement.classList.toggle('completed');
+                            
+                            // Update task statistics
+                            updateTaskStats();
+                        }
+                        this.setAttribute('data-listener', 'true');
+                    }
+                });
+            });
+        }
+        
+        // Export tasks function
+        function exportTasks(format) {
+            // Sample task data for demonstration
+            const tasks = [
+                {
+                    title: "Complete Project Presentation",
+                    description: "Prepare slides and demo for the final project presentation",
+                    priority: "high",
+                    status: "pending",
+                    dueDate: "2023-06-15",
+                    tags: ["Work", "Urgent"]
+                },
+                {
+                    title: "Study for Exam",
+                    description: "Review chapters 5-8 for the upcoming exam",
+                    priority: "medium",
+                    status: "pending",
+                    dueDate: "2023-06-20",
+                    tags: ["Study", "Important"]
+                },
+                {
+                    title: "Buy groceries",
+                    description: "Get milk, eggs, bread, and vegetables",
+                    priority: "low",
+                    status: "completed",
+                    dueDate: "2023-06-10",
+                    tags: ["Personal"]
+                }
+            ];
+            
+            let content = '';
+            let filename = 'tasks';
+            
+            if (format === 'json') {
+                content = JSON.stringify(tasks, null, 2);
+                filename += '.json';
+                downloadFile(content, filename, 'application/json');
+            } else if (format === 'csv') {
+                content = 'Title,Description,Priority,Status,Due Date,Tags\n';
+                tasks.forEach(task => {
+                    content += `"${task.title}","${task.description}","${task.priority}","${task.status}","${task.dueDate}","${task.tags.join(', ')}"\n`;
+                });
+                filename += '.csv';
+                downloadFile(content, filename, 'text/csv');
+            }
+            
+            alert(`Tasks exported as ${format.toUpperCase()}`);
+        }
+        
+        // Print tasks
+        function printTasks() {
+            window.print();
+        }
+        
+        // Download file helper
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Search tasks function
+        document.getElementById('task-search').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const tasks = document.querySelectorAll('.list-group-item');
+            
+            tasks.forEach(task => {
+                const title = task.querySelector('h5').textContent.toLowerCase();
+                const description = task.querySelector('p').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    task.style.display = '';
+                } else {
+                    task.style.display = 'none';
+                }
+            });
+        });
+        
+        // Add task animation demo
+        setTimeout(() => {
+            const newTask = document.createElement('div');
+            newTask.className = 'list-group-item priority-low task-added animate__animated animate__fadeInUp';
+            newTask.innerHTML = `
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">
+                        <i class="fas fa-clipboard-check task-icon"></i>
+                        Go for a run
+                    </h5>
+                    <small>
+                        <i class="far fa-clock task-icon"></i>
+                        2023-06-25
+                    </small>
+                </div>
+                <p class="mb-1">
+                    <i class="fas fa-align-left task-icon"></i>
+                    30 minute jog in the park
+                </p>
+                <div class="mb-2">
+                    <span class="task-tag">Health</span>
+                    <span class="task-tag">Exercise</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <small>
+                        <i class="fas fa-flag task-icon"></i>
+                        Priority: low
+                    </small>
+                    <div class="btn-group">
+                        <button class="btn btn-success btn-sm">
+                            <i class="fas fa-check-circle me-1"></i> Complete
+                        </button>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt me-1"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add the new task after 3 seconds for demonstration
+            setTimeout(() => {
+                document.querySelector('.list-group').appendChild(newTask);
+                
+                // Update counters
+                document.getElementById('total-tasks').textContent = '6';
+                document.getElementById('pending-tasks').textContent = '4';
+                
+                // Update progress bar
+                const progressBar = document.getElementById('task-progress');
+                progressBar.style.width = '33%';
+                progressBar.textContent = '33%';
+                progressBar.setAttribute('aria-valuenow', '33');
+                
+                // Update chart
+                initTaskChart();
+            }, 3000);
+        }, 1000);
+    </script>
+</body>
+</html>
+<style>
+    /* Base Styles */
+    body {
+        min-height: 100vh;
+        transition: all 0.3s ease;
+        background: #1a1a2e;
+        color: #ffffff;
+        overflow-x: hidden;
+    }
+
+    .card {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: #4ecca3;
+        color: #ffffff;
+        transition: all 0.3s ease;
+        transform: translateY(0);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Particle background */
+    #particles-js {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+
+    /* Header Styles */
+    .app-header {
+        text-align: center;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .header-icons {
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .header-icon {
+        font-size: 2.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        animation: floatIcon 3s ease-in-out infinite;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .header-icon:nth-child(1) { animation-delay: 0s; }
+    .header-icon:nth-child(2) { animation-delay: 0.3s; }
+    .header-icon:nth-child(3) { animation-delay: 0.6s; }
+
+    .header-text {
+        font-size: 3.5rem;
+        font-weight: bold;
+        background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: textShine 3s ease-in-out infinite;
+        margin: 0;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    @keyframes floatIcon {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px) scale(1.1); }
+    }
+
+    @keyframes textShine {
+        0% { filter: brightness(100%) blur(0); }
+        50% { filter: brightness(150%) blur(1px); }
+        100% { filter: brightness(100%) blur(0); }
+    }
+
+    /* Task Statistics */
+    .task-counter {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .counter-item {
+        padding: 10px;
+        border-radius: 8px;
+        min-width: 100px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .counter-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    
+    .progress-container {
+        margin: 20px 0;
+    }
+
+    /* Task priority styling */
+    .priority-high {
+        border-left: 4px solid #dc3545 !important;
+    }
+    
+    .priority-medium {
+        border-left: 4px solid #ffc107 !important;
+    }
+    
+    .priority-low {
+        border-left: 4px solid #28a745 !important;
+    }
+
+    /* Search and filter */
+    .search-container {
+        margin-bottom: 20px;
+    }
+
+    /* Task tags */
+    .task-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        margin-right: 5px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Task animation */
+    .task-added {
+        animation: fadeInUp 0.5s;
+    }
+
+    /* Chart container */
+    .chart-container {
+        position: relative;
+        height: 200px;
+        margin-top: 20px;
+    }
+
+    /* Navigation */
+    .nav-link {
+        color: #4ecca3;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+        color: #84fab0;
+        transform: translateY(-2px);
+    }
+
+    /* Back button */
+    .back-btn {
+        position: fixed;
+        left: 20px;
+        top: 20px;
+        z-index: 1001;
+        background-color: #4ecca3;
+        border-color: #4ecca3;
+    }
+</style>
+
+/* Completed task styling */
+.completed {
+opacity: 0.6;
+text-decoration: line-through;
+}
+
+// Complete task using the API
+        function completeTask(taskId) {
+            fetch(`/api/todos/${taskId}/complete`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Find the task element and mark it as completed
+                    const taskElement = document.querySelector(`.list-group-item[data-id="${taskId}"]`);
+                    if (taskElement) {
+                        taskElement.classList.add('completed');
+                        
+                        // Update the complete button
+                        const completeBtn = taskElement.querySelector('.btn-success');
+                        if (completeBtn) {
+                            completeBtn.remove();
+                        }
+                        
+                        // Update task statistics
+                        updateTaskStats();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error completing task:', error);
+                alert('Failed to complete task. Please try again.');
+            });
+        }
+        
+        // Delete task using the API
+        function deleteTask(taskId) {
+            fetch(`/api/todos/${taskId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Find the task element and remove it with animation
+                    const taskElement = document.querySelector(`.list-group-item[data-id="${taskId}"]`);
+                    if (taskElement) {
+                        taskElement.classList.add('animate__animated', 'animate__fadeOutRight');
+                        
+                        // Remove the element after animation completes
+                        setTimeout(() => {
+                            taskElement.remove();
+                            
+                            // Update task statistics
+                            updateTaskStats();
+                        }, 500);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting task:', error);
+                alert('Failed to delete task. Please try again.');
+            });
+        }
+        
+        // Update task statistics
+        function updateTaskStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(stats => {
+                    // Update counters
+                    document.getElementById('total-tasks').textContent = stats.total;
+                    document.getElementById('completed-tasks').textContent = stats.completed;
+                    document.getElementById('pending-tasks').textContent = stats.pending;
+                    
+                    // Update progress bar
+                    const progressBar = document.getElementById('task-progress');
+                    progressBar.style.width = `${stats.completion_percentage}%`;
+                    progressBar.textContent = `${stats.completion_percentage}%`;
+                    progressBar.setAttribute('aria-valuenow', stats.completion_percentage);
+                    
+                    // Update chart
+                    initTaskChart();
+                })
+                .catch(error => {
+                    console.error('Error updating stats:', error);
+                });

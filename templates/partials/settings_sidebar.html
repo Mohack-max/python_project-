@@ -1,0 +1,70 @@
+<div class="settings-sidebar">
+    <div class="settings-header">
+        <h4>Customize Your Experience</h4>
+        <button class="btn-close close-settings"></button>
+    </div>
+    
+    <form action="{{ url_for('save_preferences') }}" method="POST" class="settings-form">
+        <div class="mb-3">
+            <label>Theme</label>
+            <select name="theme" class="form-select">
+                <option value="light" {% if user_preferences.theme == 'light' %}selected{% endif %}>Light</option>
+                <option value="dark" {% if user_preferences.theme == 'dark' %}selected{% endif %}>Dark</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Background Style</label>
+            <select name="background_style" class="form-select" id="backgroundStyle">
+                <option value="color">Solid Color</option>
+                <option value="image">Background Image</option>
+            </select>
+        </div>
+
+        <div class="mb-3" id="colorPicker">
+            <label>Background Color</label>
+            <input type="color" name="background_color" class="form-control" 
+                   value="{{ user_preferences.background_color|default('#f4f6f8') }}">
+        </div>
+
+        <div class="mb-3" id="backgroundSelector" style="display: none;">
+            <label>Choose Background</label>
+            <div class="background-options">
+                {% for bg in background_images %}
+                <div class="background-option">
+                    <input type="radio" name="background_image" value="{{ bg }}" 
+                           id="bg_{{ loop.index }}" class="d-none"
+                           {% if user_preferences.background_image == bg %}checked{% endif %}>
+                    <label for="bg_{{ loop.index }}" class="bg-preview" 
+                           style="background-image: url('{{ url_for('static', filename='images/backgrounds/' + bg) }}')">
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Font Family</label>
+            <select name="font_family" class="form-select">
+                <option value="Poppins" {% if user_preferences.font_family == 'Poppins' %}selected{% endif %}>Poppins</option>
+                <option value="Roboto" {% if user_preferences.font_family == 'Roboto' %}selected{% endif %}>Roboto</option>
+                <option value="Open Sans" {% if user_preferences.font_family == 'Open Sans' %}selected{% endif %}>Open Sans</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Font Size</label>
+            <input type="range" name="font_size" class="form-range" min="12" max="20" 
+                   value="{{ user_preferences.font_size|default('16')|replace('px', '') }}">
+            <span class="font-size-preview">16px</span>
+        </div>
+
+        <div class="mb-3">
+            <label>Text Color</label>
+            <input type="color" name="text_color" class="form-control" 
+                   value="{{ user_preferences.text_color|default('#2d3436') }}">
+        </div>
+
+        <button type="submit" class="btn btn-custom w-100">Save Preferences</button>
+    </form>
+</div>

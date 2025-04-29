@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        body {
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .card {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Stars Theme */
+        .stars-bg {
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
+                radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
+            background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px;
+            background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+        }
+
+        /* Ocean Theme */
+        .waves {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: url('static/images/waves.png');
+            animation: wave 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes wave {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 1000px; }
+        }
+
+        /* Enhanced Settings Panel */
+        .settings-panel {
+            position: fixed;
+            right: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: rgba(20, 20, 20, 0.95);
+            padding: 20px;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-toggle {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            z-index: 1001;
+        }
+
+        .themes-container {
+            margin-top: 20px;
+        }
+
+        .theme-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-preview:hover {
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .theme-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+
+        /* Theme Previews */
+        .nightSky-preview {
+            background: #1a1a2e;
+            background-image: radial-gradient(white 1px, transparent 1px);
+            background-size: 10px 10px;
+        }
+
+        .northernLights-preview {
+            background: linear-gradient(135deg, #203a43, #2c5364);
+        }
+
+        .cyberpunk-preview {
+            background: #2b1055;
+            border: 1px solid #ff2a6d;
+        }
+
+        .minimal-preview {
+            background: #ffffff;
+        }
+
+        .minimal-preview .theme-name {
+            color: #2d3436;
+            text-shadow: none;
+        }
+
+        .forest-preview {
+            background: #2d3436;
+            border: 1px solid #6ab04c;
+        }
+
+        /* Sort Controls */
+        .sort-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sort-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            background: transparent;
+            border: 1px solid currentColor;
+            color: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sort-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sort-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Header Styles */
+        .app-header {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .header-icons {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: floatIcon 3s ease-in-out infinite;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .header-icon:nth-child(1) { animation-delay: 0s; }
+        .header-icon:nth-child(2) { animation-delay: 0.3s; }
+        .header-icon:nth-child(3) { animation-delay: 0.6s; }
+
+        .header-text {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShine 3s ease-in-out infinite;
+            margin: 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+
+        @keyframes textShine {
+            0% { filter: brightness(100%) blur(0); }
+            50% { filter: brightness(150%) blur(1px); }
+            100% { filter: brightness(100%) blur(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="app-header">
+        <div class="header-icons">
+            <i class="fas fa-rocket header-icon"></i>
+            <i class="fas fa-star header-icon"></i>
+            <i class="fas fa-moon header-icon"></i>
+        </div>
+        <h1 class="header-text">DESIGN THINKERS 2.0 CSE Y</h1>
+    </div>
+
+    <!-- Settings Toggle Button -->
+    <button class="btn btn-primary settings-toggle">
+        <i class="fas fa-cog"></i>
+    </button>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="m-0">Theme Settings</h4>
+            <button class="btn btn-sm btn-outline-light settings-toggle">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="themes-container">
+            {% for theme_id, theme in [
+                ('nightSky', 'Night Sky'),
+                ('northernLights', 'Northern Lights'),
+                ('cyberpunk', 'Cyberpunk'),
+                ('minimal', 'Minimal Light'),
+                ('forest', 'Mystic Forest')
+            ] %}
+            <div class="theme-preview {{ theme_id }}-preview" onclick="setTheme('{{ theme_id }}')">
+                <span class="theme-name">{{ theme }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <!-- Add Task Form -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Add New Task</h5>
+                        <form action="{{ url_for('add') }}" method="POST">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="title" placeholder="Task Title" required>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" name="description" placeholder="Description"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label>Due Date</label>
+                                    <input type="date" class="form-control" name="due_date">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label>Priority</label>
+                                    <select class="form-control" name="priority">
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Task</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tasks List -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Your Tasks</h5>
+                        {% if todos %}
+                            <div class="list-group">
+                            {% for todo in todos %}
+                                <div class="list-group-item priority-{{ todo.priority }}">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">
+                                            <i class="fas fa-clipboard-check task-icon"></i>
+                                            {{ todo.title }}
+                                        </h5>
+                                        <small class="text-muted">
+                                            <i class="far fa-clock task-icon"></i>
+                                            {% if todo.due_date %}
+                                                {{ todo.due_date.strftime('%Y-%m-%d') }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <p class="mb-1">
+                                        <i class="fas fa-align-left task-icon"></i>
+                                        {{ todo.description }}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-flag task-icon"></i>
+                                            Priority: {{ todo.priority }}
+                                        </small>
+                                        <div class="btn-group">
+                                            {% if todo.status != 'completed' %}
+                                                <a href="{{ url_for('update_status', id=todo.id, status='completed') }}" 
+                                                   class="btn btn-success btn-sm">
+                                                   <i class="fas fa-check-circle me-1"></i> Complete
+                                                </a>
+                                            {% endif %}
+                                            <a href="{{ url_for('delete', id=todo.id) }}" 
+                                               class="btn btn-danger btn-sm">
+                                               <i class="fas fa-trash-alt me-1"></i> Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No tasks yet. Add your first task above!</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme definitions
+        const themes = {
+            nightSky: {
+                background: '#1a1a2e',
+                textColor: '#ffffff',
+                cardBg: 'rgba(255, 255, 255, 0.1)',
+                borderColor: '#4ecca3',
+                accent: '#4ecca3'
+            },
+            northernLights: {
+                background: 'linear-gradient(135deg, #203a43, #2c5364)',
+                textColor: '#ffffff',
+                cardBg: 'rgba(255, 255, 255, 0.1)',
+                borderColor: '#7fdbda',
+                accent: '#7fdbda'
+            },
+            cyberpunk: {
+                background: '#2b1055',
+                textColor: '#ffffff',
+                cardBg: 'rgba(255, 255, 255, 0.1)',
+                borderColor: '#ff2a6d',
+                accent: '#ff2a6d'
+            },
+            minimal: {
+                background: '#ffffff',
+                textColor: '#2d3436',
+                cardBg: '#ffffff',
+                borderColor: '#e0e0e0',
+                accent: '#3498db'
+            },
+            forest: {
+                background: '#2d3436',
+                textColor: '#ffffff',
+                cardBg: 'rgba(255, 255, 255, 0.1)',
+                borderColor: '#6ab04c',
+                accent: '#6ab04c'
+            }
+        };
+    
+        // Settings Panel Toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.settings-toggle').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelector('.settings-panel').classList.toggle('open');
+                });
+            });
+    
+            // Load saved theme
+            const savedTheme = localStorage.getItem('selectedTheme') || 'nightSky';
+            setTheme(savedTheme);
+        });
+    
+        // Theme Switching
+        function setTheme(themeName) {
+            const theme = themes[themeName];
+            if (!theme) return;
+            
+            document.body.style.background = theme.background;
+            document.body.style.color = theme.textColor;
+            
+            document.querySelectorAll('.card, .form-control, .list-group-item').forEach(el => {
+                el.style.backgroundColor = theme.cardBg;
+                el.style.borderColor = theme.borderColor;
+                el.style.color = theme.textColor;
+            });
+            
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                btn.style.backgroundColor = theme.accent;
+                btn.style.borderColor = theme.accent;
+            });
+            
+            localStorage.setItem('selectedTheme', themeName);
+        }
+    </script>
+
+    <!-- Add this button somewhere visible in your index.html, perhaps after the header section -->
+    <div class="container mt-5">
+        <h2>Add a New Todo</h2>
+        <form action="{{ url_for('add') }}" method="post" class="todo-form">
+            <div class="mb-3">
+                <input type="text" name="title" class="form-control" placeholder="Todo Title" required>
+            </div>
+            <div class="mb-3">
+                <textarea name="description" class="form-control" placeholder="Description"></textarea>
+            </div>
+            <div class="mb-3">
+                <select name="priority" class="form-select">
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <input type="date" name="due_date" class="form-control">
+            </div>
+            <!-- Removed email input field -->
+            <button type="submit" class="btn btn-primary">Add Todo</button>
+        </form>
+        <!-- Button to navigate to email.html -->
+        <div class="mt-3">
+            <a href="{{ url_for('email_reminder') }}" class="btn btn-secondary">Go to Email Reminder</a>
+        </div>
+    </div>
+</html>
